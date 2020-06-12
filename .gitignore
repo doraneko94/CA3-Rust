@@ -1,2 +1,6 @@
+target/
+Cargo.lock
+**/*.rs.bk
+.ipynb_checkpoints/
 *.csv
 *.png
