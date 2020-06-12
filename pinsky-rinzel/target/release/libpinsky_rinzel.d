@@ -1,0 +1,1 @@
+C:\Rust\codes\CA3-Rust\pinsky-rinzel\target\release\libpinsky_rinzel.rlib: C:\Rust\codes\CA3-Rust\ca3-util\src\lib.rs C:\Rust\codes\CA3-Rust\pinsky-rinzel\src\consts.rs C:\Rust\codes\CA3-Rust\pinsky-rinzel\src\ion.rs C:\Rust\codes\CA3-Rust\pinsky-rinzel\src\lib.rs
