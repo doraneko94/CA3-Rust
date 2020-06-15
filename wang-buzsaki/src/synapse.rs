@@ -37,6 +37,6 @@ impl Synapse {
     }
 
     pub fn f(&self, v: f64) -> f64 {
-        1.0 / (1.0 + (-(v - self.theta) / 2.0))
+        1.0 / (1.0 + (-(v - self.theta) / 2.0).exp())
     }
 }

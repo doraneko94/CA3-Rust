@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use rayon::prelude::*;
 use ca3_util::{rk4, judge};
 
 use crate::consts::*;
@@ -13,6 +12,8 @@ pub struct InterNeuron {
     pub na: NaChannel,
     pub k: KChannel,
     pub synapses: Vec<Synapse>,
+
+    pub n_syn: usize,
 }
 
 impl InterNeuron {
@@ -57,24 +58,30 @@ impl InterNeuron {
 
         let mut synapses = Vec::new();
         let v_judge = judge(n as usize, p);
+        let mut n_syn = 0;
         for (i, &b) in v_judge.iter().enumerate() {
-            if b { synapses.push(Synapse::new(i, g_syn, alpha, beta, theta)); }
+            if b { 
+                synapses.push(Synapse::new(i, g_syn, alpha, beta, theta));
+                n_syn += 1;
+            }
         }
+        if n_syn == 0 { n_syn = 1; }
 
-        Self { v, i_app, na, k, synapses, }
+        Self { v, i_app, na, k, synapses, n_syn, }
     }
 
     pub fn run(&mut self, dt: f64, v_pre: &Vec<f64>) -> f64 {
         self.na.run(self.v, dt);
         self.k.run(self.v, dt);
-        self.synapses.par_iter_mut()
-                     .map(|s| s.run(dt, v_pre))
-                     .collect::<Vec<()>>();
+        let _ = self.synapses.iter_mut()
+                             .map(|s| s.run(dt, v_pre))
+                             .collect::<Vec<()>>();
 
-        let i_syn_h = self.synapses.par_iter_mut()
+        let i_syn_h = self.synapses.iter_mut()
                                    .map(|s| s.i_syn_head())
                                    .sum::<f64>();
-        let i_syn = |v: f64| i_syn_h * (v - E_SYN);
+        let n_syn = self.n_syn as f64;
+        let i_syn = |v: f64| i_syn_h * (v - E_SYN) / n_syn;
         let i_app = self.i_app;
         let dv = |v: f64| (- self.na.i_ion(v) - self.k.i_ion(v) - G_L * (v - E_L) - i_syn(v) + i_app) / C_M;
         self.v += rk4(dv, self.v, dt);
