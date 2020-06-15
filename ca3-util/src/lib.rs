@@ -28,3 +28,17 @@ pub fn take_id(n_neuron: usize, n_connect: usize) -> Vec<usize> {
     ret.sort();
     ret
 }
+
+pub fn judge(n: usize, p: f64) -> Vec<bool> {
+    let mut ret = Vec::with_capacity(n);
+    let ud = Uniform::new(0.0, 1.0);
+    for _ in 0..n {
+        if ud.sample(&mut rand::thread_rng()) < p {
+            ret.push(true);
+        } else {
+            ret.push(false);
+        }
+    }
+
+    ret
+}
